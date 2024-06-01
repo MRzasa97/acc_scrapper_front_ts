@@ -5,10 +5,11 @@ export class ApiClient {
             method: 'POST',
             headers: {
                 'Content-type': 'application/json',
-                headers,
+                ...headers,
             },
             body: JSON.stringify(data),
         })
-        return await response.json();
+        
+        return await response;
     }
 }

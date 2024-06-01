@@ -1,12 +1,12 @@
 import { ApiClient } from "./ApiClient";
 
 class AuthService extends ApiClient {
-    async Register(username: string, password: string): Promise<void> {
+    async Register(username: string, password: string): Promise<Response> {
         const response = await this.post(
-            'http://localhost:8000/register',
+            'http://localhost:8000/authorize/register',
             { username, password},
         );
-        console.log(response)
+        return response;
     }
 }
 

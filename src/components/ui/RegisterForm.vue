@@ -9,9 +9,10 @@
             <input type="password" id="password" v-model="password" class=" border rounded-md "/>
         </div>
             <button type="submit" class="w-full text-center bg-blue-500 hover:bg-blue-700 text-white font-bold rounded">Register</button>
-
-        
     </form>
+    <div v-if="isRegistered">
+        <p>Registration Successful!</p>
+    </div>
 </template>
 
 <script lang="ts">
@@ -23,17 +24,32 @@ export default defineComponent({
     setup() {
         const username = ref('')
         const password = ref('')
+        const isRegistered = ref(false)
+        const registrationError = ref('');
 
-
-        const register = () => {
-            AuthService.Register(username.value, password.value)
-            console.log('Registerging:', {username: username.value, password: password.value})
+        const register = async () => {
+            try {
+                const response = await AuthService.Register(username.value, password.value);
+                if (response.status === 201) {
+                    isRegistered.value = true;
+                    registrationError.value = '';
+                    console.log('Registering:', { username: username.value, password: password.value });
+                } else {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || `Registration failed with status: ${response.status}`);
+                }
+            } catch (error) {
+                console.error('Registration error:', error);
+                registrationError.value = 'Registration failed';
+                isRegistered.value = false;
+            }
         };
 
         return {
             username,
             password,
-            register
+            register,
+            isRegistered
         };
     }
 })
