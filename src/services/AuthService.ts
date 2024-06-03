@@ -9,11 +9,16 @@ class AuthService extends ApiClient {
         return response;
     }
 
-    async Login(username: string, password: string): Promise<string> {
+    async Login(username: string, password: string) {
         const response = await this.post('http://localhost:8000/authorize/login', {username, password});
-        const json = await response.json()
-        localStorage.setItem("AuthToken", json["token"])
-        return json["token"]
+        if(response.ok) {
+            const json = await response.json()
+            localStorage.setItem("AuthToken", json["token"])
+            return {success: true}
+        } else {
+            return {success: false}
+        }
+
     }
 
     setUserToken(token: string): void{
@@ -27,7 +32,12 @@ class AuthService extends ApiClient {
     }
 
     isLoggedIn(): boolean {
+        console.log("logged in: ", !!this.getUserToken())
         return !!this.getUserToken()
+    }
+
+    logout() {
+        localStorage.removeItem("AuthToken")
     }
 }
 

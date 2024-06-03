@@ -18,25 +18,35 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
 import AuthService from '../../services/AuthService';
+import { useRouter, useRoute } from 'vue-router'
 
 export default defineComponent({
     name: 'LoginForm',
-    setup() {
+    props: {
+        close: {
+            type: Function,
+            required: true
+        }
+    },
+    emits: ['close'],
+    setup(props) {
         const username = ref('')
         const password = ref('')
-        const isLogin = ref(false)
+        const router = useRouter();
 
         const login = async () => {
             const response = await AuthService.Login(username.value, password.value)
             console.log(response)
-            isLogin.value = AuthService.isLogin()
+            if(response.success) {
+                props.close();
+                router.push({ name: 'Home' })
+            }
         }
 
         return {
             username,
             password,
             login,
-            isLogin
         }
     }
 })
